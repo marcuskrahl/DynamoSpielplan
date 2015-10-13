@@ -1,12 +1,10 @@
 package de.marcuskrahl.dynamospielplan;
 
-import java.net.URL;
-
 public class HtmlMatchPlanRetriever {
 
-    private URL url;
+    private MatchPlanURL url;
 
-    public HtmlMatchPlanRetriever(URL url) {
+    public HtmlMatchPlanRetriever(MatchPlanURL url) {
         if (url == null) {
             throw new NullPointerException();
         }

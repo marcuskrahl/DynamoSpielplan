@@ -4,9 +4,7 @@ import org.junit.*;
 
 import de.marcuskrahl.dynamospielplan.HtmlMatchPlanRetriever;
 import de.marcuskrahl.dynamospielplan.MatchPlan;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import de.marcuskrahl.dynamospielplan.MatchPlanURL;
 
 import static org.junit.Assert.*;
 
@@ -18,12 +16,19 @@ public class HtmlMatchPlanRetrieverTest {
     }
 
     @Test
-    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsMatchPlan() throws MalformedURLException {
-        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new URL("http://www.example.com"));
+    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsMatchPlan() {
+        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL());
 
         MatchPlan plan = retriever.retrieve();
 
         assertNotNull(plan);
         assertTrue(plan instanceof MatchPlan);
+    }
+
+    private class DummyMatchPlanURL implements MatchPlanURL {
+
+        public String getContent() {
+            return "";
+        }
     }
 }
