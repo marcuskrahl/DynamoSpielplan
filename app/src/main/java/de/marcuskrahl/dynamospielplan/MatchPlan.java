@@ -1,7 +1,10 @@
 package de.marcuskrahl.dynamospielplan;
 
-/**
- * Created by marcus on 13.10.15.
- */
 public class MatchPlan {
+
+    public final Match[] matches;
+
+    public MatchPlan(Match[] matches) {
+        this.matches = matches;
+    }
 }

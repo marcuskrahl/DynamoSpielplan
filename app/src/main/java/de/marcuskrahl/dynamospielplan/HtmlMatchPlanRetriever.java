@@ -12,6 +12,6 @@ public class HtmlMatchPlanRetriever {
     }
 
     public MatchPlan retrieve() {
-        return new MatchPlan();
+        return new MatchPlan(new Match[3]);
     }
 }
