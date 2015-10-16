@@ -2,9 +2,15 @@ package de.marcuskrahl.dynamospielplan.test;
 
 import org.junit.*;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import de.marcuskrahl.dynamospielplan.HtmlMatchPlanRetriever;
 import de.marcuskrahl.dynamospielplan.MatchPlan;
 import de.marcuskrahl.dynamospielplan.MatchPlanURL;
+import de.marcuskrahl.dynamospielplan.Match;
+import de.marcuskrahl.dynamospielplan.MatchType;
 
 import static org.junit.Assert.*;
 
@@ -52,7 +58,25 @@ public class HtmlMatchPlanRetrieverTest {
 
         MatchPlan plan = retriever.retrieve();
 
-        assertEquals(plan.matches.length,3);
+        assertEquals(plan.matches.length, 3);
+    }
+
+    @Test
+    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsCorrectMatches() {
+        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL(threeMatchesHTML));
+
+        MatchPlan plan = retriever.retrieve();
+
+        assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23)), plan.matches[0]);
+        assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27)), plan.matches[1]);
+        assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9)), plan.matches[2]);
+    }
+
+    private Calendar getLocalDate(int year, int month, int day)
+    {
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
+        cal.set(year,month-1,day);
+        return cal;
     }
 
     private class DummyMatchPlanURL implements MatchPlanURL {

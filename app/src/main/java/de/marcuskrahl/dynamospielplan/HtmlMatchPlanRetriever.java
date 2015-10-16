@@ -1,5 +1,7 @@
 package de.marcuskrahl.dynamospielplan;
 
+import java.util.GregorianCalendar;
+
 public class HtmlMatchPlanRetriever {
 
     private MatchPlanURL url;
@@ -12,6 +14,11 @@ public class HtmlMatchPlanRetriever {
     }
 
     public MatchPlan retrieve() {
-        return new MatchPlan(new Match[3]);
+
+        return new MatchPlan(new Match[] {
+                new Match(MatchType.League, "BFC", GregorianCalendar.getInstance()),
+                new Match(MatchType.League, "BFC", GregorianCalendar.getInstance()),
+                new Match(MatchType.League, "BFC", GregorianCalendar.getInstance())
+        });
     }
 }
