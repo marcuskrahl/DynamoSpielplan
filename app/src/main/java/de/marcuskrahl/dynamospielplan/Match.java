@@ -33,8 +33,10 @@ public class Match {
         }
 
         if ( (this.date.get(Calendar.YEAR) != otherMatch.date.get(Calendar.YEAR))
-            || (this.date.get(Calendar.MONTH) != otherMatch.date.get(Calendar.MONTH))
-            || (this.date.get(Calendar.DATE) != otherMatch.date.get(Calendar.DATE))) {
+                || (this.date.get(Calendar.MONTH) != otherMatch.date.get(Calendar.MONTH))
+                || (this.date.get(Calendar.DATE) != otherMatch.date.get(Calendar.DATE))
+                || (this.date.get(Calendar.HOUR_OF_DAY) != otherMatch.date.get(Calendar.HOUR_OF_DAY))
+                || (this.date.get(Calendar.MINUTE) != otherMatch.date.get(Calendar.MINUTE))) {
             return false;
         }
 
