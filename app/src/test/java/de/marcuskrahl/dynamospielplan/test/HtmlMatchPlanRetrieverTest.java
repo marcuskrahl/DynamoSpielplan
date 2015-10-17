@@ -1,5 +1,7 @@
 package de.marcuskrahl.dynamospielplan.test;
 
+import android.text.Html;
+
 import org.junit.*;
 
 import java.util.Calendar;
@@ -11,6 +13,7 @@ import de.marcuskrahl.dynamospielplan.MatchPlan;
 import de.marcuskrahl.dynamospielplan.MatchPlanURL;
 import de.marcuskrahl.dynamospielplan.Match;
 import de.marcuskrahl.dynamospielplan.MatchType;
+import de.marcuskrahl.dynamospielplan.exceptions.TableNotFoundException;
 
 import static org.junit.Assert.*;
 
@@ -43,8 +46,8 @@ public class HtmlMatchPlanRetrieverTest {
     }
 
     @Test
-    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsMatchPlan() {
-        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL());
+    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsMatchPlan() throws Exception {
+        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL(threeMatchesHTML));
 
         MatchPlan plan = retriever.retrieve();
 
@@ -53,16 +56,16 @@ public class HtmlMatchPlanRetrieverTest {
     }
 
     @Test
-    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsCorrectNumberOfMatches() {
+    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsCorrectNumberOfMatches() throws Exception {
         HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL(threeMatchesHTML));
 
         MatchPlan plan = retriever.retrieve();
 
-        assertEquals(plan.matches.length, 3);
+        assertEquals(3, plan.matches.length);
     }
 
     @Test
-    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsCorrectMatches() {
+    public void WhenCalled_HtmlMatchPlanRetriever_ReturnsCorrectMatches() throws Exception {
         HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL(threeMatchesHTML));
 
         MatchPlan plan = retriever.retrieve();
@@ -70,6 +73,22 @@ public class HtmlMatchPlanRetrieverTest {
         assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23)), plan.matches[0]);
         assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27)), plan.matches[1]);
         assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9)), plan.matches[2]);
+    }
+
+    @Test(expected=TableNotFoundException.class)
+    public void WhenNoTablePresent_HtmlMatchPlanRetriever_ThrowsTableNotFoundException() throws TableNotFoundException {
+        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL("<table>123</table ending missing"));
+
+        MatchPlan plan = retriever.retrieve();
+    }
+
+    @Test
+    public void WhenTableTagHasDifferentFormat_HtmlMatchPlanRetriever_DoesNotThrow() throws TableNotFoundException {
+        HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL("<table other-attribute=\"123141\" class=\"other-class bb second-other-class\" next-attribute>123</table>"));
+
+        MatchPlan plan = retriever.retrieve();
+
+        assertNotNull(plan);
     }
 
     private Calendar getLocalDate(int year, int month, int day)
