@@ -1,12 +1,8 @@
 package de.marcuskrahl.dynamospielplan.test;
 
-import android.text.Html;
-
 import org.junit.*;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import static de.marcuskrahl.dynamospielplan.test.TestHelper.*;
 
 import de.marcuskrahl.dynamospielplan.HtmlMatchPlanRetriever;
 import de.marcuskrahl.dynamospielplan.MatchPlan;
@@ -70,9 +66,9 @@ public class HtmlMatchPlanRetrieverTest {
 
         MatchPlan plan = retriever.retrieve();
 
-        assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23)), plan.matches[0]);
-        assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27)), plan.matches[1]);
-        assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9)), plan.matches[2]);
+        assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23,18,30)), plan.matches[0]);
+        assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27,14,0)), plan.matches[1]);
+        assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9,19,0)), plan.matches[2]);
     }
 
     @Test(expected=TableNotFoundException.class)
@@ -89,13 +85,6 @@ public class HtmlMatchPlanRetrieverTest {
         MatchPlan plan = retriever.retrieve();
 
         assertNotNull(plan);
-    }
-
-    private Calendar getLocalDate(int year, int month, int day)
-    {
-        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
-        cal.set(year,month-1,day);
-        return cal;
     }
 
     private class DummyMatchPlanURL implements MatchPlanURL {

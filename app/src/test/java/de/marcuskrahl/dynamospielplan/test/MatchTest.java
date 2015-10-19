@@ -2,9 +2,7 @@ package de.marcuskrahl.dynamospielplan.test;
 
 import org.junit.*;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import static de.marcuskrahl.dynamospielplan.test.TestHelper.*;
 
 import static org.junit.Assert.*;
 
@@ -65,12 +63,4 @@ public class MatchTest {
         assertFalse(m1.equals(m2));
     }
 
-    private Calendar getLocalDate(int year, int month, int day, int hour, int minute)
-    {
-        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
-        cal.set(year,month-1,day);
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, minute);
-        return cal;
-    }
 }
