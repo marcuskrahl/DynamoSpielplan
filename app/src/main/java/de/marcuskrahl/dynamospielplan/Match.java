@@ -10,6 +10,18 @@ public class Match {
 
     private final Calendar date;
 
+    public Calendar getDate() {
+        return date;
+    }
+
+    public String getOpponent() {
+        return opponent;
+    }
+
+    public MatchType getMatchType() {
+        return matchType;
+    }
+
     public Match(MatchType matchType, String opponent, Calendar date) {
         this.matchType = matchType;
         this.opponent = opponent;
