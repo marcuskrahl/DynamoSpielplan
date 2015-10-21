@@ -1,5 +1,7 @@
 package de.marcuskrahl.dynamospielplan;
 
+import android.text.Html;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -27,9 +29,11 @@ public class HtmlMatchParser {
         return new Match(matchType,opponent,date);
     }
 
-    private MatchType getMatchType(String matchHtml) throws InvalidMatchTypeException {
+    private MatchType getMatchType(String matchHtml) throws HtmlParseException {
         Matcher typeMatch = matchTypePattern.matcher(matchHtml);
-        typeMatch.find();
+        if (! typeMatch.find()) {
+            throw new HtmlParseException(matchHtml);
+        }
         String typeString = typeMatch.group(1).toLowerCase();
         if (typeString.contains("test")) {
             return MatchType.Test;
@@ -42,9 +46,11 @@ public class HtmlMatchParser {
         }
     }
 
-    private String getOpponent(String matchHtml) {
+    private String getOpponent(String matchHtml) throws HtmlParseException {
         Matcher opponentMatch = opponentPattern.matcher(matchHtml);
-        opponentMatch.find();
+        if (! opponentMatch.find()) {
+            throw new HtmlParseException(matchHtml);
+        }
         String opponentString = opponentMatch.group(1);
         if (opponentString.equals("SG Dynamo Dresden")) {
             opponentString = opponentMatch.group(2);
@@ -52,15 +58,19 @@ public class HtmlMatchParser {
         return opponentString;
     }
 
-    private Calendar getDate(String matchHtml) {
+    private Calendar getDate(String matchHtml) throws HtmlParseException{
         Matcher dateMatch = datePattern.matcher(matchHtml);
-        dateMatch.find();
+        if (! dateMatch.find()) {
+            throw new HtmlParseException(matchHtml);
+        }
         int day = Integer.parseInt(dateMatch.group(1));
         int month = Integer.parseInt(dateMatch.group(2));
         int year = Integer.parseInt(dateMatch.group(3));
 
         Matcher timeMatch = timePattern.matcher(matchHtml);
-        timeMatch.find();
+        if (! timeMatch.find()) {
+            throw new HtmlParseException(matchHtml);
+        }
         int hour = Integer.parseInt(timeMatch.group(1));
         int minute = Integer.parseInt(timeMatch.group(2));
 
