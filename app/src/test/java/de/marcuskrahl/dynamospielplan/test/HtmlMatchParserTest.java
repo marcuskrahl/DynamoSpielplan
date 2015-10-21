@@ -1,6 +1,7 @@
 package de.marcuskrahl.dynamospielplan.test;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
 
 import static de.marcuskrahl.dynamospielplan.test.TestHelper.*;
@@ -51,12 +52,17 @@ public class HtmlMatchParserTest {
     private final String templateMatchInvalidTime=
                     "<tr class=\"test\"> <td>23.06.2015 - Di</td> <td class=\"nb\">19:0 Uhr</td> <td class=\"img test\">" +
                     "<span class=\"game\">Testspiele - Sommervorbereitung</span> <span class=\"teams\">Eichsfeld-Auswahl - SG Dynamo Dresden</span> </td>"+
-                    "<td class=\"result\"><span>0:7 </span></td> </tr>";
+                            "<td class=\"result\"><span>0:7 </span></td> </tr>";
+
+    private HtmlMatchParser parser;
+
+    @Before
+    public void Setup() {
+        parser = new HtmlMatchParser();
+    }
 
     @Test
     public void WhenCalledWithAValidMatch_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatch);
 
         assertEquals(MatchType.Test, match.getMatchType());
@@ -66,8 +72,6 @@ public class HtmlMatchParserTest {
 
     @Test
     public void WhenCalledWithAValidMatch2_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatch2);
 
         assertEquals(MatchType.League, match.getMatchType());
@@ -77,8 +81,6 @@ public class HtmlMatchParserTest {
 
     @Test
     public void WhenCalledWithAValidMatch3_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatch3);
 
         assertEquals(MatchType.Cup, match.getMatchType());
@@ -88,36 +90,26 @@ public class HtmlMatchParserTest {
 
     @Test(expected = InvalidMatchTypeException.class)
     public void WhenCalledWithAnUnknownMatchType_HtmlMatchParser_ThrowsInvalidMatchTypeException() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatchUnknownMatchType);
     }
 
     @Test(expected = HtmlParseException.class)
     public void WhenCalledWithInvalidTypeHtml_HtmlMatchParser_ThrowsHtmlParseException() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatchInvalidType);
     }
 
     @Test(expected = HtmlParseException.class)
     public void WhenCalledWithInvalidOpponentHtml_HtmlMatchParser_ThrowsHtmlParseException() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatchInvalidOpponent);
     }
 
     @Test(expected = HtmlParseException.class)
     public void WhenCalledWithInvalidDateHtml_HtmlMatchParser_ThrowsHtmlParseException() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatchInvalidDate);
     }
 
     @Test(expected = HtmlParseException.class)
     public void WhenCalledWithInvalidTimeHtml_HtmlMatchParser_ThrowsHtmlParseException() throws HtmlParseException {
-        HtmlMatchParser parser = new HtmlMatchParser();
-
         Match match = parser.parse(templateMatchInvalidTime);
     }
 
