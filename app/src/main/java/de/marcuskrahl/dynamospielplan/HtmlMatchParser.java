@@ -27,17 +27,25 @@ public class HtmlMatchParser {
     private MatchType getMatchType(String matchHtml) {
         Matcher typeMatch = matchTypePattern.matcher(matchHtml);
         typeMatch.find();
-        String typeString = typeMatch.group(1);
-        if (typeString.equals("test")) {
+        String typeString = typeMatch.group(1).toLowerCase();
+        if (typeString.contains("test")) {
             return MatchType.Test;
+        } else if (typeString.contains("cup")) {
+            return MatchType.Cup;
+        } else if (typeString.contains("league")) {
+            return MatchType.League;
+        } else {
+            throw new Error("Not implemented");
         }
-        throw new Error("Not implemented");
     }
 
     private String getOpponent(String matchHtml) {
         Matcher opponentMatch = opponentPattern.matcher(matchHtml);
         opponentMatch.find();
         String opponentString = opponentMatch.group(1);
+        if (opponentString.equals("SG Dynamo Dresden")) {
+            opponentString = opponentMatch.group(2);
+        }
         return opponentString;
     }
 
