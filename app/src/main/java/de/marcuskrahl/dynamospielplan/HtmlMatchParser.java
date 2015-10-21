@@ -6,6 +6,9 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import de.marcuskrahl.dynamospielplan.exceptions.HtmlParseException;
+import de.marcuskrahl.dynamospielplan.exceptions.InvalidMatchTypeException;
+
 public class HtmlMatchParser {
 
     /*"<tr class=\"test\"> <td>23.06.2015 - Di</td> <td class=\"nb\">18:30 Uhr</td> <td class=\"img test\">" +
@@ -17,14 +20,14 @@ public class HtmlMatchParser {
     private final Pattern datePattern = Pattern.compile("<td[^>]*>\\s*(\\d\\d)\\.(\\d\\d).(\\d\\d\\d\\d)[^<]*</td>");
     private final Pattern timePattern = Pattern.compile("<td[^>]*>(\\d\\d):(\\d\\d)\\s+Uhr[^<]*</td>");
 
-    public Match parse(String matchHtml) {
+    public Match parse(String matchHtml) throws HtmlParseException {
         MatchType matchType = getMatchType(matchHtml);
         String opponent = getOpponent(matchHtml);
         Calendar date = getDate(matchHtml);
         return new Match(matchType,opponent,date);
     }
 
-    private MatchType getMatchType(String matchHtml) {
+    private MatchType getMatchType(String matchHtml) throws InvalidMatchTypeException {
         Matcher typeMatch = matchTypePattern.matcher(matchHtml);
         typeMatch.find();
         String typeString = typeMatch.group(1).toLowerCase();
@@ -35,7 +38,7 @@ public class HtmlMatchParser {
         } else if (typeString.contains("league")) {
             return MatchType.League;
         } else {
-            throw new Error("Not implemented");
+            throw new InvalidMatchTypeException(typeString);
         }
     }
 

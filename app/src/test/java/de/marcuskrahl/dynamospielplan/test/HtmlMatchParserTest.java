@@ -8,6 +8,8 @@ import static de.marcuskrahl.dynamospielplan.test.TestHelper.*;
 import de.marcuskrahl.dynamospielplan.Match;
 import de.marcuskrahl.dynamospielplan.MatchType;
 import de.marcuskrahl.dynamospielplan.HtmlMatchParser;
+import de.marcuskrahl.dynamospielplan.exceptions.HtmlParseException;
+import de.marcuskrahl.dynamospielplan.exceptions.InvalidMatchTypeException;
 
 public class HtmlMatchParserTest {
 
@@ -28,8 +30,13 @@ public class HtmlMatchParserTest {
                     "<span class=\"game\">Sachsen-Pokal - Achtelfinale</span> <span class=\"teams\">SG Dynamo Dresden - Chemnitzer FC</span></a></td>"+
                     "<td class=\"result\"><span><a href=\"saison/spielplan/2015-2016/spielbericht/spiel/11303.html\">2:1 (1:1) </a></span></td> </tr>";
 
+    private final String templateMatchUnknownMatchType =
+                    "<tr class=\"unknown\"> <td>23.06.2015 - Di</td> <td class=\"nb\">18:30 Uhr</td> <td class=\"img test\">" +
+                    "<span class=\"game\">Testspiele - Sommervorbereitung</span> <span class=\"teams\">Eichsfeld-Auswahl - SG Dynamo Dresden</span> </td>"+
+                    "<td class=\"result\"><span>0:7 </span></td> </tr>";
+
     @Test
-    public void WhenCalledWithAValidMatch_HtmlMatchParser_ReturnsTheMatch() {
+    public void WhenCalledWithAValidMatch_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
         HtmlMatchParser parser = new HtmlMatchParser();
 
         Match match = parser.parse(templateMatch);
@@ -40,7 +47,7 @@ public class HtmlMatchParserTest {
     }
 
     @Test
-    public void WhenCalledWithAValidMatch2_HtmlMatchParser_ReturnsTheMatch() {
+    public void WhenCalledWithAValidMatch2_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
         HtmlMatchParser parser = new HtmlMatchParser();
 
         Match match = parser.parse(templateMatch2);
@@ -51,7 +58,7 @@ public class HtmlMatchParserTest {
     }
 
     @Test
-    public void WhenCalledWithAValidMatch3_HtmlMatchParser_ReturnsTheMatch() {
+    public void WhenCalledWithAValidMatch3_HtmlMatchParser_ReturnsTheMatch() throws HtmlParseException {
         HtmlMatchParser parser = new HtmlMatchParser();
 
         Match match = parser.parse(templateMatch3);
@@ -59,6 +66,13 @@ public class HtmlMatchParserTest {
         assertEquals(MatchType.Cup, match.getMatchType());
         assertEquals("Chemnitzer FC", match.getOpponent());
         assertEquals(getLocalDate(2015,10,9,19,0), match.getDate());
+    }
+
+    @Test(expected = InvalidMatchTypeException.class)
+    public void WhenCalledWithAnUnknownMatchType_HtmlMatchParser_ThrowsInvalidMatchTypeException() throws HtmlParseException {
+        HtmlMatchParser parser = new HtmlMatchParser();
+
+        Match match = parser.parse(templateMatchUnknownMatchType);
     }
 
 }
