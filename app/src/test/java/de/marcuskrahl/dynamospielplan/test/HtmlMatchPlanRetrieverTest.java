@@ -72,14 +72,14 @@ public class HtmlMatchPlanRetrieverTest {
     }
 
     @Test(expected=TableNotFoundException.class)
-    public void WhenNoTablePresent_HtmlMatchPlanRetriever_ThrowsTableNotFoundException() throws TableNotFoundException {
+    public void WhenNoTablePresent_HtmlMatchPlanRetriever_ThrowsTableNotFoundException() throws Exception {
         HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL("<table>123</table ending missing"));
 
         MatchPlan plan = retriever.retrieve();
     }
 
     @Test
-    public void WhenTableTagHasDifferentFormat_HtmlMatchPlanRetriever_DoesNotThrow() throws TableNotFoundException {
+    public void WhenTableTagHasDifferentFormat_HtmlMatchPlanRetriever_DoesNotThrow() throws Exception {
         HtmlMatchPlanRetriever retriever = new HtmlMatchPlanRetriever(new DummyMatchPlanURL("<table other-attribute=\"123141\" class=\"other-class bb second-other-class\" next-attribute>123</table>"));
 
         MatchPlan plan = retriever.retrieve();

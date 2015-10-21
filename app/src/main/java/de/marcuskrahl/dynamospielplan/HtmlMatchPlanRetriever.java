@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import de.marcuskrahl.dynamospielplan.exceptions.HtmlParseException;
 import de.marcuskrahl.dynamospielplan.exceptions.TableNotFoundException;
 
 public class HtmlMatchPlanRetriever {
@@ -15,6 +16,8 @@ public class HtmlMatchPlanRetriever {
     private final Pattern findTableBody = Pattern.compile("<tbody>(.*)</tbody>");
     private final Pattern findTableEntries = Pattern.compile("<tr.+?</tr>");
 
+    private final HtmlMatchParser parser = new HtmlMatchParser();
+
     public HtmlMatchPlanRetriever(MatchPlanURL url) {
         if (url == null) {
             throw new NullPointerException();
@@ -22,7 +25,7 @@ public class HtmlMatchPlanRetriever {
         this.url = url;
     }
 
-    public MatchPlan retrieve() throws TableNotFoundException {
+    public MatchPlan retrieve() throws TableNotFoundException, HtmlParseException {
         ArrayList<Match> matchPlan = new ArrayList<Match>();
         String pageContent = url.getContent();
         String matchTable = getMatchTable(pageContent);
@@ -63,7 +66,7 @@ public class HtmlMatchPlanRetriever {
         return tableEntriesArray;
     }
 
-    private Match getMatchByEntry(String matchEntry) {
-        return new Match(MatchType.Cup,"BFC", Calendar.getInstance());
+    private Match getMatchByEntry(String matchEntry) throws HtmlParseException {
+        return parser.parse(matchEntry);
     }
 }
