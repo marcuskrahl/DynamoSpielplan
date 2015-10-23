@@ -19,7 +19,7 @@ public class HtmlMatchParser {
 
     private final Pattern matchTypePattern = Pattern.compile("<tr[^>]* class=\"([^\"]*)\"[^>]*>.*");
     private final Pattern opponentPattern = Pattern.compile(".*<span class=\"teams\">([^<]*) - ([^<]*)</span>.*");
-    private final Pattern datePattern = Pattern.compile("<td[^>]*>\\s*(\\d\\d)\\.(\\d\\d).(\\d\\d\\d\\d)[^<]*</td>");
+    private final Pattern datePattern = Pattern.compile("(?:</span>|<td[^>]*>)\\s*(\\d\\d)\\.(\\d\\d).(\\d\\d\\d\\d)[^<]*</td>");
     private final Pattern timePattern = Pattern.compile("<td[^>]*>(\\d\\d):(\\d\\d)\\s+Uhr[^<]*</td>");
 
     public Match parse(String matchHtml) throws HtmlParseException {

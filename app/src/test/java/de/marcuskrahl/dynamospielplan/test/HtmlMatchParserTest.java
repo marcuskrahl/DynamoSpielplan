@@ -52,7 +52,12 @@ public class HtmlMatchParserTest {
     private final String templateMatchInvalidTime=
                     "<tr class=\"test\"> <td>23.06.2015 - Di</td> <td class=\"nb\">19:0 Uhr</td> <td class=\"img test\">" +
                     "<span class=\"game\">Testspiele - Sommervorbereitung</span> <span class=\"teams\">Eichsfeld-Auswahl - SG Dynamo Dresden</span> </td>"+
-                            "<td class=\"result\"><span>0:7 </span></td> </tr>";
+                    "<td class=\"result\"><span>0:7 </span></td> </tr>";
+
+    private final String templateMatchRoundChange=
+                    "<tr class=\"league3 break\"> <td><span class=\"line\"></span>12.12.2015 - Sa*</td> <td class=\"nb\">14:00 Uhr</td> <td class=\"img league3\">"+
+                    "<span class=\"game\">3. Liga - 20. Spieltag</span> <span class=\"teams\">VfB Stuttgart II - SG Dynamo Dresden</span></td> " +
+                    "<td class=\"result\"><span>-:- </span></td> </tr>";
 
     private HtmlMatchParser parser;
 
@@ -111,6 +116,16 @@ public class HtmlMatchParserTest {
     @Test(expected = HtmlParseException.class)
     public void WhenCalledWithInvalidTimeHtml_HtmlMatchParser_ThrowsHtmlParseException() throws HtmlParseException {
         Match match = parser.parse(templateMatchInvalidTime);
+    }
+
+    @Test
+    public void WhenCalledWithRoundChangeMatch_HtmlMatchParser_ReturnsCorrectMatch() throws HtmlParseException {
+        //This test is necessary because a span indicating the change of the round (Hinrunde/Rückrunde) is inserted
+        //directly into the date <td> for some reason
+
+        Match match = parser.parse(templateMatchRoundChange);
+
+        assertEquals(getLocalDate(2015,12,12,14,0),match.getDate());
     }
 
 }
