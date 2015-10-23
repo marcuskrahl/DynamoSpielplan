@@ -10,6 +10,8 @@ public class Match {
 
     private final Calendar date;
 
+    private final boolean home;
+
     public Calendar getDate() {
         return date;
     }
@@ -22,10 +24,11 @@ public class Match {
         return matchType;
     }
 
-    public Match(MatchType matchType, String opponent, Calendar date) {
+    public Match(MatchType matchType, String opponent, Calendar date, boolean isHome) {
         this.matchType = matchType;
         this.opponent = opponent;
         this.date = date;
+        this.home = isHome;
     }
 
     @Override
@@ -52,6 +55,14 @@ public class Match {
             return false;
         }
 
+        if (this.isHome() != otherMatch.isHome()) {
+            return false;
+        }
+
         return true;
+    }
+
+    public boolean isHome() {
+        return home;
     }
 }

@@ -1,5 +1,6 @@
 package de.marcuskrahl.dynamospielplan;
 
+import android.support.annotation.NonNull;
 import android.text.Html;
 
 import java.util.Calendar;
@@ -25,8 +26,9 @@ public class HtmlMatchParser {
     public Match parse(String matchHtml) throws HtmlParseException {
         MatchType matchType = getMatchType(matchHtml);
         String opponent = getOpponent(matchHtml);
+        boolean isHome = isHomeMatch(matchHtml);
         Calendar date = getDate(matchHtml);
-        return new Match(matchType,opponent,date);
+        return new Match(matchType,opponent,date,isHome);
     }
 
     private MatchType getMatchType(String matchHtml) throws HtmlParseException {
@@ -47,15 +49,33 @@ public class HtmlMatchParser {
     }
 
     private String getOpponent(String matchHtml) throws HtmlParseException {
+        Matcher opponentMatch = matchOpponentPattern(matchHtml);
+        if (isHomeMatch(opponentMatch)) {
+            return opponentMatch.group(2);
+        } else {
+            return opponentMatch.group(1);
+        }
+    }
+
+    private Matcher matchOpponentPattern(String matchHtml) throws HtmlParseException {
         Matcher opponentMatch = opponentPattern.matcher(matchHtml);
         if (! opponentMatch.find()) {
             throw new HtmlParseException(matchHtml);
         }
-        String opponentString = opponentMatch.group(1);
-        if (opponentString.equals("SG Dynamo Dresden")) {
-            opponentString = opponentMatch.group(2);
+        return opponentMatch;
+    }
+
+    private boolean isHomeMatch(String matchHtml) throws HtmlParseException {
+        Matcher opponentMatch = matchOpponentPattern(matchHtml);
+        return isHomeMatch(opponentMatch);
+    }
+
+    private boolean isHomeMatch(Matcher opponentMatch) {
+        if (opponentMatch.group(1).equals("SG Dynamo Dresden")) {
+            return true;
+        } else {
+            return false;
         }
-        return opponentString;
     }
 
     private Calendar getDate(String matchHtml) throws HtmlParseException{

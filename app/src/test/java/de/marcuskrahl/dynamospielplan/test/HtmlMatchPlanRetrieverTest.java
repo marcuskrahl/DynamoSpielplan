@@ -66,9 +66,9 @@ public class HtmlMatchPlanRetrieverTest {
 
         MatchPlan plan = retriever.retrieve();
 
-        assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23,18,30)), plan.matches[0]);
-        assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27,14,0)), plan.matches[1]);
-        assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9,19,0)), plan.matches[2]);
+        assertEquals(new Match(MatchType.Test,"Eichsfeld-Auswahl",getLocalDate(2015,6,23,18,30),false), plan.matches[0]);
+        assertEquals(new Match(MatchType.League,"VfR Aalen",getLocalDate(2015,9,27,14,0),true), plan.matches[1]);
+        assertEquals(new Match(MatchType.Cup,"Chemnitzer FC",getLocalDate(2015,10,9,19,0),true), plan.matches[2]);
     }
 
     @Test(expected=TableNotFoundException.class)

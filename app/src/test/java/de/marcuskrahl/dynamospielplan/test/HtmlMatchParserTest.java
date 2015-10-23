@@ -73,6 +73,7 @@ public class HtmlMatchParserTest {
         assertEquals(MatchType.Test, match.getMatchType());
         assertEquals("Eichsfeld-Auswahl", match.getOpponent());
         assertEquals(getLocalDate(2015,6,23,18,30), match.getDate());
+        assertEquals(false,match.isHome());
     }
 
     @Test
@@ -82,6 +83,7 @@ public class HtmlMatchParserTest {
         assertEquals(MatchType.League, match.getMatchType());
         assertEquals("VfR Aalen", match.getOpponent());
         assertEquals(getLocalDate(2015,9,27,14,0), match.getDate());
+        assertEquals(true,match.isHome());
     }
 
     @Test
@@ -91,6 +93,7 @@ public class HtmlMatchParserTest {
         assertEquals(MatchType.Cup, match.getMatchType());
         assertEquals("Chemnitzer FC", match.getOpponent());
         assertEquals(getLocalDate(2015,10,9,19,0), match.getDate());
+        assertEquals(true,match.isHome());
     }
 
     @Test(expected = InvalidMatchTypeException.class)
