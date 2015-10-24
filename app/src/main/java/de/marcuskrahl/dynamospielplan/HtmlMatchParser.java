@@ -1,8 +1,5 @@
 package de.marcuskrahl.dynamospielplan;
 
-import android.support.annotation.NonNull;
-import android.text.Html;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -32,10 +29,7 @@ public class HtmlMatchParser {
     }
 
     private MatchType getMatchType(String matchHtml) throws HtmlParseException {
-        Matcher typeMatch = matchTypePattern.matcher(matchHtml);
-        if (! typeMatch.find()) {
-            throw new HtmlParseException(matchHtml);
-        }
+        Matcher typeMatch = findPatternInHtml(matchTypePattern,matchHtml);
         String typeString = typeMatch.group(1).toLowerCase();
         if (typeString.contains("test")) {
             return MatchType.Test;
@@ -49,7 +43,7 @@ public class HtmlMatchParser {
     }
 
     private String getOpponent(String matchHtml) throws HtmlParseException {
-        Matcher opponentMatch = matchOpponentPattern(matchHtml);
+        Matcher opponentMatch = findPatternInHtml(opponentPattern,matchHtml);
         if (isHomeMatch(opponentMatch)) {
             return opponentMatch.group(2);
         } else {
@@ -57,16 +51,16 @@ public class HtmlMatchParser {
         }
     }
 
-    private Matcher matchOpponentPattern(String matchHtml) throws HtmlParseException {
-        Matcher opponentMatch = opponentPattern.matcher(matchHtml);
-        if (! opponentMatch.find()) {
+    private Matcher findPatternInHtml(Pattern pattern, String matchHtml) throws HtmlParseException {
+        Matcher matcher = pattern.matcher(matchHtml);
+        if (! matcher.find()) {
             throw new HtmlParseException(matchHtml);
         }
-        return opponentMatch;
+        return matcher;
     }
 
     private boolean isHomeMatch(String matchHtml) throws HtmlParseException {
-        Matcher opponentMatch = matchOpponentPattern(matchHtml);
+        Matcher opponentMatch = findPatternInHtml(opponentPattern,matchHtml);
         return isHomeMatch(opponentMatch);
     }
 
@@ -79,18 +73,12 @@ public class HtmlMatchParser {
     }
 
     private Calendar getDate(String matchHtml) throws HtmlParseException{
-        Matcher dateMatch = datePattern.matcher(matchHtml);
-        if (! dateMatch.find()) {
-            throw new HtmlParseException(matchHtml);
-        }
+        Matcher dateMatch = findPatternInHtml(datePattern,matchHtml);
         int day = Integer.parseInt(dateMatch.group(1));
         int month = Integer.parseInt(dateMatch.group(2));
         int year = Integer.parseInt(dateMatch.group(3));
 
-        Matcher timeMatch = timePattern.matcher(matchHtml);
-        if (! timeMatch.find()) {
-            throw new HtmlParseException(matchHtml);
-        }
+        Matcher timeMatch = findPatternInHtml(timePattern,matchHtml);
         int hour = Integer.parseInt(timeMatch.group(1));
         int minute = Integer.parseInt(timeMatch.group(2));
 
