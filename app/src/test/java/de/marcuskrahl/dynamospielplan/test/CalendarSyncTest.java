@@ -91,6 +91,16 @@ public class CalendarSyncTest {
 
     }
 
+    @Test
+    public void WhenExistingMatchIsNotInNewMatchPlan_CalendarSync_DeletesExistingMatchFromTheCalendar() throws Exception {
+        Match existingMatch = new Match(MatchType.Test,"Test opponent",Calendar.getInstance(),true);
+        stubExistingMatch(existingMatch);
+
+        calendarSync.run();
+
+        verify(mockAdapter).deleteMatch(existingMatch);
+    }
+
     private void stubReturnOfOneMatch(Match matchToReturn) throws Exception{
         MatchPlan matchPlan = new MatchPlan(new Match[] {matchToReturn});
         when(mockMatchPlanRetriever.retrieve()).thenReturn(matchPlan);

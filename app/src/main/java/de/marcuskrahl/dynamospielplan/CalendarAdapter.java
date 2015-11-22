@@ -7,5 +7,7 @@ public interface CalendarAdapter {
 
     public void insertMatch(Match matchToInsert);
 
+    public void deleteMatch(Match matchToDelete);
+
     public MatchPlan getExistingMatches();
 }
