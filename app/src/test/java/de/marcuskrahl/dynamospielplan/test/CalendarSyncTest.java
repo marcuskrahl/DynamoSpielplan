@@ -31,11 +31,12 @@ public class CalendarSyncTest {
     private void setupDefaultMockAdapter() {
         mockAdapter = mock(CalendarAdapter.class);
         when(mockAdapter.isCalendarCreated()).thenReturn(true);
+        when(mockAdapter.getExistingMatches()).thenReturn(new MatchPlan(new Match[0]));
     }
 
     private void setupDefaultMockMatchPlanRetriever() throws Exception {
         mockMatchPlanRetriever = mock(HtmlMatchPlanRetriever.class);
-        when(mockMatchPlanRetriever.retrieve()).thenReturn(new MatchPlan(new Match[] {}));
+        when(mockMatchPlanRetriever.retrieve()).thenReturn(new MatchPlan(new Match[0]));
     }
 
     @Test
@@ -59,12 +60,31 @@ public class CalendarSyncTest {
     @Test
     public void WhenNewMatch_CalendarSync_AddsNewMatchToCalendar() throws Exception {
         Match newMatch = new Match(MatchType.Test,"Test opponent", Calendar.getInstance(),true);
-        MatchPlan matchPlan = new MatchPlan(new Match[] {newMatch});
-        when(mockMatchPlanRetriever.retrieve()).thenReturn(matchPlan);
+        stubReturnOfOneMatch(newMatch);
 
         calendarSync.run();
 
         verify(mockAdapter).insertMatch(newMatch);
+    }
 
+    @Test
+    public void WhenNewMatchAlreadyExists_CalendarSync_DoesNotAddNewMatchToCalendar() throws Exception {
+        Match newMatch = new Match(MatchType.Test,"Test opponent", Calendar.getInstance(),true);
+        stubReturnOfOneMatch(newMatch);
+        stubExistingMatch(newMatch);
+
+        calendarSync.run();
+
+        verify(mockAdapter,never()).insertMatch(newMatch);
+    }
+
+    private void stubReturnOfOneMatch(Match matchToReturn) throws Exception{
+        MatchPlan matchPlan = new MatchPlan(new Match[] {matchToReturn});
+        when(mockMatchPlanRetriever.retrieve()).thenReturn(matchPlan);
+    }
+
+    private void stubExistingMatch(Match matchToReturn) {
+        MatchPlan matchPlan = new MatchPlan(new Match[] {matchToReturn});
+        when(mockAdapter.getExistingMatches()).thenReturn(matchPlan);
     }
 }

@@ -6,4 +6,6 @@ public interface CalendarAdapter {
     public void createCalendar();
 
     public void insertMatch(Match matchToInsert);
+
+    public MatchPlan getExistingMatches();
 }

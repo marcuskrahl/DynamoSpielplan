@@ -17,10 +17,21 @@ public class CalendarSync {
             calendarAdapter.createCalendar();
         }
 
-        MatchPlan matchPlan = matchPlanRetriever.retrieve();
-
-        for(Match match: matchPlan.matches) {
-            calendarAdapter.insertMatch(match);
+        MatchPlan newMatchPlan = matchPlanRetriever.retrieve();
+        MatchPlan existingMatchPlan = calendarAdapter.getExistingMatches();
+        for(Match match: newMatchPlan.matches) {
+            if (!matchAlreadyExists(match,existingMatchPlan)) {
+                calendarAdapter.insertMatch(match);
+            }
         }
+    }
+
+    private boolean matchAlreadyExists(Match match, MatchPlan existingMatchPlan) {
+        for(Match existingMatch: existingMatchPlan.matches) {
+            if (existingMatch.equals(match)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
