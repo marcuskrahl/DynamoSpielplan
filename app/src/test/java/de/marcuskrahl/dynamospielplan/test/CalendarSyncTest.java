@@ -78,6 +78,19 @@ public class CalendarSyncTest {
         verify(mockAdapter,never()).insertMatch(newMatch);
     }
 
+    @Test
+    public void WhenNewMatchDoesNotMatchExistingMatches_CalendarSync_AddsNewMatchToCalendar() throws Exception {
+        Match newMatch = new Match(MatchType.Test,"Test opponent",Calendar.getInstance(),true);
+        Match existingMatch = new Match(MatchType.Test,"another opponent",Calendar.getInstance(),true);
+        stubReturnOfOneMatch(newMatch);
+        stubExistingMatch(existingMatch);
+
+        calendarSync.run();
+
+        verify(mockAdapter).insertMatch(newMatch);
+
+    }
+
     private void stubReturnOfOneMatch(Match matchToReturn) throws Exception{
         MatchPlan matchPlan = new MatchPlan(new Match[] {matchToReturn});
         when(mockMatchPlanRetriever.retrieve()).thenReturn(matchPlan);
