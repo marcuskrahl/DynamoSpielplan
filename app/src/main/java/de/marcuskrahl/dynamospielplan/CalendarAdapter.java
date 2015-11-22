@@ -4,4 +4,6 @@ public interface CalendarAdapter {
     public boolean isCalendarCreated();
 
     public void createCalendar();
+
+    public void insertMatch(Match matchToInsert);
 }
