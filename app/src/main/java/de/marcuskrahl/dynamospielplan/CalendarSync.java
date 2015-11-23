@@ -2,14 +2,18 @@ package de.marcuskrahl.dynamospielplan;
 
 import de.marcuskrahl.dynamospielplan.exceptions.HtmlParseException;
 
+import java.util.List;
+
 public class CalendarSync {
 
+    private MatchPlanComparer comparer;
     private CalendarAdapter calendarAdapter;
     private HtmlMatchPlanRetriever matchPlanRetriever;
 
     public CalendarSync(CalendarAdapter calendarAdapter, HtmlMatchPlanRetriever matchPlanRetriever) {
         this.calendarAdapter = calendarAdapter;
         this.matchPlanRetriever = matchPlanRetriever;
+        this.comparer = new MatchPlanComparer();
     }
 
     public void run() throws HtmlParseException {
@@ -20,32 +24,21 @@ public class CalendarSync {
         MatchPlan newMatchPlan = matchPlanRetriever.retrieve();
         MatchPlan existingMatchPlan = calendarAdapter.getExistingMatches();
 
-        insertNewMatches(newMatchPlan,existingMatchPlan);
-        deleteCancelledMatches(newMatchPlan,existingMatchPlan);
+        MatchPlanComparisonResult comparisonResult = comparer.compare(existingMatchPlan,newMatchPlan);
+
+        insertNewMatches(comparisonResult.matchesToAdd);
+        deleteCancelledMatches(comparisonResult.matchesToDelete);
     }
 
-    private void insertNewMatches(MatchPlan newMatchPlan, MatchPlan existingMatchPlan) {
-        for(Match match: newMatchPlan.matches) {
-            if (!matchExistsInPlan(match, existingMatchPlan)) {
-                calendarAdapter.insertMatch(match);
-            }
+    private void insertNewMatches(List<Match> matchesToInsert) {
+        for(Match match: matchesToInsert) {
+            calendarAdapter.insertMatch(match);
         }
     }
 
-    private void deleteCancelledMatches(MatchPlan newMatchPlan, MatchPlan existingMatchPlan) {
-        for (Match match: existingMatchPlan.matches) {
-            if (!matchExistsInPlan(match, newMatchPlan)) {
-                calendarAdapter.deleteMatch(match);
-            }
+    private void deleteCancelledMatches(List<Match> matchesToDelete) {
+        for (Match match: matchesToDelete) {
+            calendarAdapter.deleteMatch(match);
         }
-    }
-
-    private boolean matchExistsInPlan(Match matchToSearch, MatchPlan matchPlan) {
-        for(Match matchInPlan: matchPlan.matches) {
-            if (matchInPlan.equals(matchToSearch)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
