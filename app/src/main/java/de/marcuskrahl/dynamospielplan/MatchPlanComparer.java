@@ -8,7 +8,6 @@ public class MatchPlanComparer {
     private MatchPlan oldMatchPlan;
     private MatchPlan newMatchPlan;
 
-
     public MatchPlanComparisonResult compare(MatchPlan oldMatchPlan, MatchPlan newMatchPlan) {
         this.result = new MatchPlanComparisonResult();
         this.oldMatchPlan = oldMatchPlan;
@@ -16,12 +15,13 @@ public class MatchPlanComparer {
 
         addNewMatches();
         deleteObsoleteMatches();
+        addMatchMovements();
 
         return result;
     }
 
     private void addNewMatches() {
-        addMatchesNotInSecondPlanToList(newMatchPlan,oldMatchPlan,result.matchesToAdd);
+        addMatchesNotInSecondPlanToList(newMatchPlan, oldMatchPlan, result.matchesToAdd);
     }
 
     private void deleteObsoleteMatches() {
@@ -30,18 +30,29 @@ public class MatchPlanComparer {
 
     private void addMatchesNotInSecondPlanToList(MatchPlan firstPlan, MatchPlan secondPlan, List<Match> listToAddTo) {
         for (Match match: firstPlan.matches) {
-            if(!planContainsMatch(secondPlan,match)) {
+            if(!planContainsMatchIgnoringDate(secondPlan, match)) {
                 listToAddTo.add(match);
             }
         }
     }
 
-    private boolean planContainsMatch(MatchPlan plan, Match matchToSearch) {
+    private boolean planContainsMatchIgnoringDate(MatchPlan plan, Match matchToSearch) {
         for(Match match: plan.matches) {
-            if (matchToSearch.equals(match)) {
+            if (matchToSearch.equalsIgnoreDate(match)) {
                 return true;
             }
         }
         return false;
     }
+
+    private void addMatchMovements() {
+        for (Match newMatch:newMatchPlan.matches) {
+            for (Match oldMatch: oldMatchPlan.matches) {
+                if (!(newMatch.equals(oldMatch)) && newMatch.equalsIgnoreDate(oldMatch)) {
+                    result.matchMovements.add(new MatchMovement(oldMatch,newMatch.getDate()));
+                }
+            }
+        }
+    }
+
 }

@@ -67,6 +67,23 @@ public class MatchPlanComparerTest {
 
         assertEquals(0, result.matchesToAdd.size());
         assertEquals(0, result.matchesToDelete.size());
+        assertEquals(0, result.matchMovements.size());
 
+    }
+
+    @Test
+    public void WhenMatchIsRescheduled_MatchPlanComparer_MarksMatchAsToBeMoved() {
+        Calendar newMatchDate = TestHelper.getLocalDate(2015,6,30,15,00);
+        Match movedMatchNewSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,6,30,15,00) ,true);
+        Match movedMatchOldSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,6,30,13,00) ,true);
+        MatchPlan oldMatchPlan = new MatchPlan(new Match[] {movedMatchOldSlot});
+        MatchPlan newMatchPlan = new MatchPlan(new Match[] {movedMatchNewSlot});
+
+        MatchPlanComparisonResult result = comparer.compare(oldMatchPlan,newMatchPlan);
+
+        assertEquals(movedMatchOldSlot, result.matchMovements.get(0).getMatch());
+        assertEquals(newMatchDate, result.matchMovements.get(0).getNewDate());
+        assertEquals(0, result.matchesToAdd.size());
+        assertEquals(0, result.matchesToDelete.size());
     }
 }
