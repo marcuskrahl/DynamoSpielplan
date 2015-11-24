@@ -71,4 +71,20 @@ public class MatchTest {
         assertFalse(m1.equals(m2));
     }
 
+    @Test
+    public void WhenMatchesAreSame_Match_ReturnsEqualIgnoreDateTrue() {
+        Match m1 = new Match(MatchType.League, "SG Sonnenhof Großaspach",getLocalDate(2015,7,23,14,0),true);
+        Match m2 = new Match(MatchType.League, "SG Sonnenhof Großaspach",getLocalDate(2015,7,23,14,0),true);
+
+        assertTrue(m1.equalsIgnoreDate(m2));
+    }
+
+    @Test
+    public void WhenMatchDatesAreDifferent_Match_ReturnsEqualIgnoreDateTrue() {
+        Match m1 = new Match(MatchType.League, "SG Sonnenhof Großaspach",getLocalDate(2015,7,23,14,0),true);
+        Match m2 = new Match(MatchType.League, "SG Sonnenhof Großaspach",getLocalDate(2015,7,22,13,0),true);
+
+        assertTrue(m1.equalsIgnoreDate(m2));
+    }
+
 }

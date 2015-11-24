@@ -39,11 +39,7 @@ public class Match {
 
         Match otherMatch = (Match) otherObject;
 
-        if (this.matchType != otherMatch.matchType) {
-            return false;
-        }
-
-        if (!this.opponent.equals(otherMatch.opponent)) {
+        if (!equalsIgnoreDate(otherMatch)) {
             return false;
         }
 
@@ -55,14 +51,28 @@ public class Match {
             return false;
         }
 
-        if (this.isHome() != otherMatch.isHome()) {
-            return false;
-        }
-
         return true;
     }
 
     public boolean isHome() {
         return home;
+    }
+
+    public boolean equalsIgnoreDate(Object otherObject) {
+        Match otherMatch = (Match) otherObject;
+
+        if (this.matchType != otherMatch.matchType) {
+            return false;
+        }
+
+        if (!this.opponent.equals(otherMatch.opponent)) {
+            return false;
+        }
+
+        if (this.isHome() != otherMatch.isHome()) {
+            return false;
+        }
+
+        return true;
     }
 }
