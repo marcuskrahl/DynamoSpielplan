@@ -6,28 +6,20 @@ import java.util.List;
 
 public class CalendarSync {
 
-    private MatchPlanComparer comparer;
     private CalendarAdapter calendarAdapter;
-    private HtmlMatchPlanRetriever matchPlanRetriever;
 
-    public CalendarSync(CalendarAdapter calendarAdapter, HtmlMatchPlanRetriever matchPlanRetriever) {
+    public CalendarSync(CalendarAdapter calendarAdapter) {
         this.calendarAdapter = calendarAdapter;
-        this.matchPlanRetriever = matchPlanRetriever;
-        this.comparer = new MatchPlanComparer();
     }
 
-    public void run() throws HtmlParseException {
+    public void run(MatchPlanComparisonResult comparisonResult) {
         if (!calendarAdapter.isCalendarCreated()){
             calendarAdapter.createCalendar();
         }
 
-        MatchPlan newMatchPlan = matchPlanRetriever.retrieve();
-        MatchPlan existingMatchPlan = calendarAdapter.getExistingMatches();
-
-        MatchPlanComparisonResult comparisonResult = comparer.compare(existingMatchPlan,newMatchPlan);
-
         insertNewMatches(comparisonResult.matchesToAdd);
         deleteCancelledMatches(comparisonResult.matchesToDelete);
+        moveRescheduledMatches(comparisonResult.matchMovements);
     }
 
     private void insertNewMatches(List<Match> matchesToInsert) {
@@ -39,6 +31,12 @@ public class CalendarSync {
     private void deleteCancelledMatches(List<Match> matchesToDelete) {
         for (Match match: matchesToDelete) {
             calendarAdapter.deleteMatch(match);
+        }
+    }
+
+    private void moveRescheduledMatches(List<MatchMovement> matchesToBeMoved) {
+        for (MatchMovement movement: matchesToBeMoved) {
+            calendarAdapter.moveMatch(movement.getMatch(),movement.getNewDate());
         }
     }
 }
