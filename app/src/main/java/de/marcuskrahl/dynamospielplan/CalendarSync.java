@@ -13,10 +13,6 @@ public class CalendarSync {
     }
 
     public void run(MatchPlanComparisonResult comparisonResult) {
-        if (!calendarAdapter.isCalendarCreated()){
-            calendarAdapter.createCalendar();
-        }
-
         insertNewMatches(comparisonResult.matchesToAdd);
         deleteCancelledMatches(comparisonResult.matchesToDelete);
         moveRescheduledMatches(comparisonResult.matchMovements);

@@ -35,24 +35,6 @@ public class CalendarSyncTest {
     }
 
     @Test
-    public void WhenRunAndNoCalendarIsPresent_CalendarSync_CreatesACalendar() throws Exception{
-        when(mockAdapter.isCalendarCreated()).thenReturn(false);
-
-        calendarSync.run(comparisonResult);
-
-        verify(mockAdapter).createCalendar();
-    }
-
-    @Test
-    public void WhenRunAndCalendarIsPresent_CalendarSync_DoesNotCreateACalendar() throws Exception {
-        when(mockAdapter.isCalendarCreated()).thenReturn(true);
-
-        calendarSync.run(comparisonResult);
-
-        verify(mockAdapter,never()).createCalendar();
-    }
-
-    @Test
     public void WhenNewMatch_CalendarSync_AddsNewMatchToCalendar() throws Exception {
         Match newMatch = new Match(MatchType.Test,"Test opponent", Calendar.getInstance(),true);
         comparisonResult.matchesToAdd.add(newMatch);
