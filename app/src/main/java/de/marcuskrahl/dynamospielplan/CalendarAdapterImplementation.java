@@ -7,14 +7,25 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
-import android.provider.CalendarContract.Events;
 import android.net.Uri;
+import android.database.Cursor;
 
 public class CalendarAdapterImplementation implements CalendarAdapter {
 
     private long calendarID = -1;
     private boolean isCalendarAvailable = false;
     private ContentResolver contentResolver;
+
+    private static final String CALENDAR_NAME = "Dynamo Kalender";
+    private static final String ACCOUNT_NAME = "dynamo_calendar";
+
+    private static final String TIME_ZONE = "Europe/Berlin";
+
+    public static final String[] CALENDAR_LOOKUP_PROJECTION = new String[] {
+            Calendars._ID,                           // 0
+    };
+
+    private static final int CALENDAR_LOOKUP_ID_INDEX = 0;
 
     public CalendarAdapterImplementation(Context context) {
         this.contentResolver = context.getContentResolver();
@@ -47,6 +58,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     public MatchPlan getExistingMatches() {
         createCalendarIfNecessary();
+        return null;
     }
 
     private void createCalendarIfNecessary() {
@@ -58,21 +70,35 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     }
 
     private boolean isCalendarCreated() {
-        return false;
+        try {
+            Cursor cur = null;
+            Uri uri = Calendars.CONTENT_URI;
+            String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND ("
+                    + Calendars.ACCOUNT_TYPE + " = ?))";
+            String[] selectionArgs = new String[]{this.ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL};
+            cur = contentResolver.query(uri, CALENDAR_LOOKUP_PROJECTION, selection, selectionArgs, null);
+            while (cur.moveToNext()) {
+                this.calendarID = cur.getLong(CALENDAR_LOOKUP_ID_INDEX);
+                return true;
+            }
+            return false;
+        } catch (SecurityException ex) {
+            return false;
+        }
     }
 
     private void createCalendar() {
         ContentValues values = new ContentValues();
-        values.put(Calendars.ACCOUNT_NAME, "dynamo_calendar");
+        values.put(Calendars.ACCOUNT_NAME, this.ACCOUNT_NAME);
         values.put(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
-        values.put(Calendars.NAME, "Dynamo Kalender");
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, "Dynamo Kalender");
+        values.put(Calendars.NAME,this.CALENDAR_NAME);
+        values.put(Calendars.CALENDAR_DISPLAY_NAME, this.CALENDAR_NAME);
         values.put(Calendars.SYNC_EVENTS,1);
         values.put(Calendars.VISIBLE,1);
         values.put(Calendars.CALENDAR_ACCESS_LEVEL,Calendars.CAL_ACCESS_OWNER);
         values.put(Calendars.DIRTY,1);
-        values.put(Calendars.CALENDAR_TIME_ZONE, TimeZone.getTimeZone("Europe/Berlin").getID());
-        //values.put(CalendarContract.CALLER_IS_SYNCADAPTER, "true");
+        values.put(Calendars.CALENDAR_TIME_ZONE, TIME_ZONE);
+
         Uri srcUri = Calendars.CONTENT_URI.buildUpon()
                 .appendQueryParameter(Calendars.ACCOUNT_NAME, "dynamo_calendar")
                 .appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
