@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
+import android.provider.CalendarContract.Events;
 import android.net.Uri;
 import android.database.Cursor;
 
@@ -21,6 +22,9 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     private static final String TIME_ZONE = "Europe/Berlin";
 
+    private static final long MILLISECONDS_IN_MINUTES = 60 * 1000;
+
+
     public static final String[] CALENDAR_LOOKUP_PROJECTION = new String[] {
             Calendars._ID,                           // 0
     };
@@ -32,20 +36,30 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     }
 
     public void insertMatch(Match matchToInsert) {
-        createCalendarIfNecessary();
+        try {
+            createCalendarIfNecessary();
 
-        /*ContentValues values = new ContentValues();
-        Calendar start = Calendar.getInstance();
-        start.set(2015,9,29,4,0,0);
-        Calendar end = Calendar.getInstance();
-        end.set(2015,9,29,20,0,0);
-        values.put(Events.DTSTART, start.getTimeInMillis());
-        values.put(Events.DTEND,end.getTimeInMillis());
-        values.put(Events.TITLE, "Spiel");
-        values.put(Events.DESCRIPTION, "Spiel");
-        values.put(Events.CALENDAR_ID, id);
-        values.put(Events.EVENT_TIMEZONE, "America/Los_Angeles");
-        Uri uri2 = contentResolver.insert(Events.CONTENT_URI, values);*/
+            long startMillis = 0;
+            long endMillis = 0;
+            Calendar beginTime = matchToInsert.getDate();
+            beginTime.set(Calendar.SECOND,0);
+            beginTime.set(Calendar.MILLISECOND,0);
+            startMillis = beginTime.getTimeInMillis();
+            endMillis = startMillis + ( 2 * 90 + 15) * MILLISECONDS_IN_MINUTES;
+
+            String matchTitle = (matchToInsert.isHome() ? "Heim " : "Auswärts ") + matchToInsert.getOpponent();
+
+            ContentValues values = new ContentValues();
+            values.put(Events.DTSTART, startMillis);
+            values.put(Events.DTEND, endMillis);
+            values.put(Events.TITLE, matchTitle);
+            values.put(Events.DESCRIPTION, matchTitle);
+            values.put(Events.CALENDAR_ID, this.calendarID);
+            values.put(Events.EVENT_TIMEZONE, TIME_ZONE);
+            contentResolver.insert(Events.CONTENT_URI, values);
+        } catch (SecurityException ex) {
+            android.util.Log.e("permission","No permission to access calendar");
+        }
     }
 
     public void deleteMatch(Match matchToDelete) {
