@@ -2,6 +2,8 @@ package de.marcuskrahl.dynamospielplan;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.List;
+import java.util.ArrayList;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,12 +26,28 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     private static final long MILLISECONDS_IN_MINUTES = 60 * 1000;
 
+    private static final String MATCH_TYPE_FIELD = Events.SYNC_DATA1;
+    private static final String OPPONENT_FIELD = Events.SYNC_DATA2;
+    private static final String IS_HOME_FIELD = Events.SYNC_DATA3;
+
 
     public static final String[] CALENDAR_LOOKUP_PROJECTION = new String[] {
             Calendars._ID,                           // 0
     };
 
+    public static final String[] MATCH_QUERY_PROJECTION = new String[]{
+            Events.DTSTART,
+            MATCH_TYPE_FIELD,
+            OPPONENT_FIELD,
+            IS_HOME_FIELD,
+    };
+
     private static final int CALENDAR_LOOKUP_ID_INDEX = 0;
+
+    private static final int MATCH_QUERY_DATE_INDEX = 0;
+    private static final int MATCH_QUERY_MATCH_TYPE_INDEX = 1;
+    private static final int MATCH_QUERY_OPPONENT_INDEX = 2;
+    private static final int MATCH_QUERY_IS_HOME_INDEX = 3;
 
     public CalendarAdapterImplementation(Context context) {
         this.contentResolver = context.getContentResolver();
@@ -72,7 +90,27 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     public MatchPlan getExistingMatches() {
         createCalendarIfNecessary();
-        return null;
+
+        try {
+            List<Match> matches = new ArrayList<Match>();
+            Cursor cur = null;
+            Uri uri = Events.CONTENT_URI;
+            String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND ("
+                    + Calendars.ACCOUNT_TYPE + " = ?))";
+            String[] selectionArgs = new String[]{this.ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL};
+            cur = contentResolver.query(uri, MATCH_QUERY_PROJECTION, selection, selectionArgs, null);
+            while (cur.moveToNext()) {
+                Calendar date = Calendar.getInstance();
+                date.setTimeInMillis(cur.getLong(MATCH_QUERY_DATE_INDEX));
+                MatchType matchType = MatchType.Test; //TODO
+                String opponent = cur.getString(MATCH_QUERY_OPPONENT_INDEX);
+                boolean isHome = cur.getString(MATCH_QUERY_IS_HOME_INDEX) == "true";
+                matches.add(new Match(matchType,opponent,date,isHome));
+            }
+            return new MatchPlan((Match[])matches.toArray());
+        } catch (SecurityException ex) {
+            return new MatchPlan(new Match[0]);
+        }
     }
 
     private void createCalendarIfNecessary() {
