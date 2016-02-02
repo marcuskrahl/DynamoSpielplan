@@ -107,7 +107,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
                 boolean isHome = cur.getString(MATCH_QUERY_IS_HOME_INDEX) == "true";
                 matches.add(new Match(matchType,opponent,date,isHome));
             }
-            return new MatchPlan((Match[])matches.toArray());
+            return new MatchPlan(matches.toArray(new Match[0]));
         } catch (SecurityException ex) {
             return new MatchPlan(new Match[0]);
         }
