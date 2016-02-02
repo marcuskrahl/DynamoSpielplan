@@ -63,7 +63,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
             beginTime.set(Calendar.SECOND,0);
             beginTime.set(Calendar.MILLISECOND,0);
             startMillis = beginTime.getTimeInMillis();
-            endMillis = startMillis + ( 2 * 90 + 15) * MILLISECONDS_IN_MINUTES;
+            endMillis = startMillis + ( 2 * 45 + 15) * MILLISECONDS_IN_MINUTES;
 
             String matchTitle = (matchToInsert.isHome() ? "Heim " : "Auswärts ") + matchToInsert.getOpponent();
 
