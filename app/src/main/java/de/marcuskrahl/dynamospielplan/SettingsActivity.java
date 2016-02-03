@@ -140,7 +140,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         private void runSync() {
-            SyncTask syncTask = new SyncTask(getContext());
+            SyncTask syncTask = new SyncTask(getActivity());
             syncTask.execute();
         }
 
