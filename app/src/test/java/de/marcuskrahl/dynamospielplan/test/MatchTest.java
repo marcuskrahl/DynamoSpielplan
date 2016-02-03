@@ -87,4 +87,12 @@ public class MatchTest {
         assertTrue(m1.equalsIgnoreDate(m2));
     }
 
+    @Test
+    public void WhenMatchOpponentIsNull_Match_ReturnsEqualFalse(){
+        Match m1 = new Match(MatchType.League, null,getLocalDate(2015,7,23,14,0),true);
+        Match m2 = new Match(MatchType.League, "SG Sonnenhof Großaspach", getLocalDate(2015,7,23,14,0),true);
+
+        assertFalse(m1.equals(m2));
+    }
+
 }

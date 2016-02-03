@@ -65,7 +65,7 @@ public class Match {
             return false;
         }
 
-        if (!this.opponent.equals(otherMatch.opponent)) {
+        if ((this.opponent == null) || (!this.opponent.equals(otherMatch.opponent))) {
             return false;
         }
 
