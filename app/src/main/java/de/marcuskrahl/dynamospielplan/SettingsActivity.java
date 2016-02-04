@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -140,8 +141,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         private void runSync() {
-            SyncTask syncTask = new SyncTask(getActivity());
+            SyncTask.SyncEventListener listener = getSyncEventListener();
+            SyncTask syncTask = new SyncTask(getActivity(),listener);
             syncTask.execute();
+        }
+
+        private SyncTask.SyncEventListener getSyncEventListener() {
+            return new SyncTask.SyncEventListener() {
+                @Override
+                public void onSyncError(String errorMessage) {
+                    Toast.makeText(getActivity(),getString(R.string.sync_fail_string, errorMessage),Toast.LENGTH_LONG).show();
+                }
+            };
         }
 
         @Override
