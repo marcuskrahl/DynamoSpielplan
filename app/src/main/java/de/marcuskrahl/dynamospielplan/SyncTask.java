@@ -8,7 +8,7 @@ import java.net.URL;
 
 import android.os.AsyncTask;
 
-public class SyncTask extends AsyncTask<Void,Void,Void> {
+public class SyncTask extends AsyncTask<Void,Void,MatchPlanComparisonResult> {
 
     private final Context context;
     private final URL url;
@@ -33,11 +33,11 @@ public class SyncTask extends AsyncTask<Void,Void,Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params2) {
+    protected MatchPlanComparisonResult doInBackground(Void... params2) {
         CalendarAdapter adapter = new CalendarAdapterImplementation(context);
         SyncRun run = new SyncRun(new HtmlMatchPlanRetriever(new DynamoMatchPlanURL(this.url)), new CalendarSync(adapter), adapter);
         try {
-            run.run();
+            return run.run();
         } catch (Exception ex) {
             Log.e("sync run", ex.getMessage());
             syncException = ex;
@@ -46,7 +46,7 @@ public class SyncTask extends AsyncTask<Void,Void,Void> {
     }
 
     @Override
-    protected void onPostExecute(Void result) {
+    protected void onPostExecute(MatchPlanComparisonResult result) {
         if ((syncException != null) && (eventListener != null)) {
             eventListener.onSyncError(syncException.getMessage());
         }
