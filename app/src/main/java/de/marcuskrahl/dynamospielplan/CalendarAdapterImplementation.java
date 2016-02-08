@@ -5,6 +5,7 @@ import java.util.TimeZone;
 import java.util.List;
 import java.util.ArrayList;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.provider.CalendarContract;
@@ -35,6 +36,10 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
             Calendars._ID,                           // 0
     };
 
+    public static final String[] EVENT_LOOKUP_PROJECTION = new String[] {
+            Events._ID,                           // 0
+    };
+
     public static final String[] MATCH_QUERY_PROJECTION = new String[]{
             Events.DTSTART,
             MATCH_TYPE_FIELD,
@@ -49,6 +54,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     private static final int MATCH_QUERY_OPPONENT_INDEX = 2;
     private static final int MATCH_QUERY_IS_HOME_INDEX = 3;
 
+    private static final int EVENT_LOOKUP_ID_INDEX = 0;
 
     private static final String IS_HOME_VALUE = "true";
     private static final String IS_NOT_HOME_VALUE = "false";
@@ -100,6 +106,40 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     public void deleteMatch(Match matchToDelete) {
         createCalendarIfNecessary();
+
+        long eventID = getMatchEventID(matchToDelete);
+        if (eventID >= 0) {
+            contentResolver.delete(ContentUris.withAppendedId(getCalendarUri(Events.CONTENT_URI), eventID), null, null);
+        }
+    }
+
+    public long getMatchEventID(Match targetMatch) {
+
+        Calendar startDate = targetMatch.getDate();
+        startDate.set(Calendar.SECOND,0);
+        startDate.set(Calendar.MILLISECOND,0);
+
+        String selection = String.format("((%s = ?) AND (%s = ?) AND (%s = ?) AND (%s = ?) AND (%s = ?))",
+                Calendars.ACCOUNT_NAME,
+                Calendars.ACCOUNT_TYPE,
+                Events.DTSTART,
+                MATCH_TYPE_FIELD,
+                OPPONENT_FIELD);
+
+        String[] selectionArgs = new String[] {
+                this.ACCOUNT_NAME,
+                CalendarContract.ACCOUNT_TYPE_LOCAL,
+                startDate.getTimeInMillis()+"",
+                targetMatch.getOpponent(),
+                targetMatch.getMatchType().toString()
+        };
+        Uri uri = getCalendarUri(Events.CONTENT_URI);
+        Cursor cur = contentResolver.query(uri, EVENT_LOOKUP_PROJECTION, selection, selectionArgs, null);
+        while (cur.moveToNext()) {
+            return cur.getLong(EVENT_LOOKUP_ID_INDEX);
+        }
+
+        return -1;
     }
 
     public void moveMatch(Match matchToBeMoved, Calendar newDate) {
