@@ -49,6 +49,10 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     private static final int MATCH_QUERY_OPPONENT_INDEX = 2;
     private static final int MATCH_QUERY_IS_HOME_INDEX = 3;
 
+
+    private static final String IS_HOME_VALUE = "true";
+    private static final String IS_NOT_HOME_VALUE = "false";
+
     public CalendarAdapterImplementation(Context context) {
         this.contentResolver = context.getContentResolver();
     }
@@ -74,10 +78,24 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
             values.put(Events.DESCRIPTION, matchTitle);
             values.put(Events.CALENDAR_ID, this.calendarID);
             values.put(Events.EVENT_TIMEZONE, TIME_ZONE);
-            contentResolver.insert(Events.CONTENT_URI, values);
+            values.put(MATCH_TYPE_FIELD,matchToInsert.getMatchType().toString());
+            values.put(OPPONENT_FIELD, matchToInsert.getOpponent());
+            values.put(IS_HOME_FIELD, matchToInsert.isHome() ? IS_HOME_VALUE : IS_NOT_HOME_VALUE);
+
+            Uri uri = getCalendarUri(Events.CONTENT_URI);
+
+            contentResolver.insert(uri, values);
         } catch (SecurityException ex) {
             android.util.Log.e("permission","No permission to access calendar");
         }
+    }
+
+    private Uri getCalendarUri(Uri baseUri) {
+        return baseUri.buildUpon()
+                .appendQueryParameter(Calendars.ACCOUNT_NAME, "dynamo_calendar")
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .build();
     }
 
     public void deleteMatch(Match matchToDelete) {
@@ -94,7 +112,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
         try {
             List<Match> matches = new ArrayList<Match>();
             Cursor cur = null;
-            Uri uri = Events.CONTENT_URI;
+            Uri uri = getCalendarUri(Events.CONTENT_URI);
             String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND ("
                     + Calendars.ACCOUNT_TYPE + " = ?))";
             String[] selectionArgs = new String[]{this.ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL};
@@ -102,9 +120,14 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
             while (cur.moveToNext()) {
                 Calendar date = Calendar.getInstance();
                 date.setTimeInMillis(cur.getLong(MATCH_QUERY_DATE_INDEX));
-                MatchType matchType = MatchType.Test; //TODO
+                MatchType matchType = MatchType.Test;
+                try {
+                    MatchType.valueOf(cur.getString(MATCH_QUERY_MATCH_TYPE_INDEX));
+                } catch (Exception ex) {
+
+                }
                 String opponent = cur.getString(MATCH_QUERY_OPPONENT_INDEX);
-                boolean isHome = cur.getString(MATCH_QUERY_IS_HOME_INDEX) == "true";
+                boolean isHome = cur.getString(MATCH_QUERY_IS_HOME_INDEX) == IS_HOME_VALUE;
                 matches.add(new Match(matchType,opponent,date,isHome));
             }
             return new MatchPlan(matches.toArray(new Match[0]));
@@ -124,7 +147,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     private boolean isCalendarCreated() {
         try {
             Cursor cur = null;
-            Uri uri = Calendars.CONTENT_URI;
+            Uri uri = getCalendarUri(Calendars.CONTENT_URI);
             String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND ("
                     + Calendars.ACCOUNT_TYPE + " = ?))";
             String[] selectionArgs = new String[]{this.ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL};
@@ -151,10 +174,8 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
         values.put(Calendars.DIRTY,1);
         values.put(Calendars.CALENDAR_TIME_ZONE, TIME_ZONE);
 
-        Uri srcUri = Calendars.CONTENT_URI.buildUpon()
-                .appendQueryParameter(Calendars.ACCOUNT_NAME, "dynamo_calendar")
-                .appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
+        Uri srcUri = getCalendarUri(Calendars.CONTENT_URI);
+
         Uri uri = contentResolver.insert(srcUri, values);
         this.calendarID = Long.parseLong(uri.getLastPathSegment());
     }
