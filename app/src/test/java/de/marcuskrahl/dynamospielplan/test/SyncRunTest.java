@@ -67,6 +67,18 @@ public class SyncRunTest {
         assertEquals(matchToMoveDestination.getDate(), argument.getValue().matchMovements.get(0).getNewDate());
     }
 
+    @Test
+    public void WhenRunning_SyncRun_ReturnsTheComparisonResult() throws Exception {
+        setupDefaultMatchPlanReturn();
+
+        MatchPlanComparisonResult result = syncRun.run();
+
+        assertEquals(matchToAdd, result.matchesToAdd.get(0));
+        assertEquals(matchToDelete, result.matchesToDelete.get(0));
+        assertEquals(matchToMove, result.matchMovements.get(0).getMatch());
+        assertEquals(matchToMoveDestination.getDate(), result.matchMovements.get(0).getNewDate());
+    }
+
     private void setupDefaultMatchPlanReturn() throws Exception{
         matchToAdd = new Match(MatchType.Test, "test opponent add", Calendar.getInstance(), true);
         matchToMove = new Match(MatchType.Test, "test opponent move", TestHelper.getLocalDate(2015, 5, 5, 10, 0), true);

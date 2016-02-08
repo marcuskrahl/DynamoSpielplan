@@ -18,7 +18,7 @@ public class SyncRun {
         this.matchPlanComparer = new MatchPlanComparer();
     }
 
-    public void run() throws HtmlParseException{
+    public MatchPlanComparisonResult run() throws HtmlParseException{
         MatchPlan newMatchPlan = matchPlanRetriever.retrieve();
         MatchPlan oldMatchPlan = calendarAdapter.getExistingMatches();
 
@@ -26,5 +26,6 @@ public class SyncRun {
 
         calendarSync.run(comparisonResult);
 
+        return comparisonResult;
     }
 }
