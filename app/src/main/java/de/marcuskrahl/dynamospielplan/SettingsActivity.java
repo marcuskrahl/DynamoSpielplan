@@ -35,6 +35,7 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -118,6 +119,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+
+        private MatchComparisonPrinter comparisonPrinter = new MatchComparisonPrinter();
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -155,7 +159,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 @Override
                 public void onSyncSuccess(MatchPlanComparisonResult result) {
-                    String toastMessage = "info";
+                    String toastMessage = comparisonPrinter.print(result);
                     Toast.makeText(getActivity(),getString(R.string.sync_success_string, toastMessage),Toast.LENGTH_LONG).show();
                 }
             };
