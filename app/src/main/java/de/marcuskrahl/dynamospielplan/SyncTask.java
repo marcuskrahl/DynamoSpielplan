@@ -49,10 +49,13 @@ public class SyncTask extends AsyncTask<Void,Void,MatchPlanComparisonResult> {
     protected void onPostExecute(MatchPlanComparisonResult result) {
         if ((syncException != null) && (eventListener != null)) {
             eventListener.onSyncError(syncException.getMessage());
+        } else if ((syncException == null) && (eventListener != null)) {
+            eventListener.onSyncSuccess(result);
         }
     }
 
     public interface SyncEventListener {
         void onSyncError(String errorMessage);
+        void onSyncSuccess(MatchPlanComparisonResult result);
     }
 }

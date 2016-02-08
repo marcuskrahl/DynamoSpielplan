@@ -152,6 +152,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public void onSyncError(String errorMessage) {
                     Toast.makeText(getActivity(),getString(R.string.sync_fail_string, errorMessage),Toast.LENGTH_LONG).show();
                 }
+
+                @Override
+                public void onSyncSuccess(MatchPlanComparisonResult result) {
+                    String toastMessage = "info";
+                    Toast.makeText(getActivity(),getString(R.string.sync_success_string, toastMessage),Toast.LENGTH_LONG).show();
+                }
             };
         }
 
