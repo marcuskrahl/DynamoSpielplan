@@ -73,7 +73,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
             beginTime.set(Calendar.SECOND,0);
             beginTime.set(Calendar.MILLISECOND,0);
             startMillis = beginTime.getTimeInMillis();
-            endMillis = startMillis + ( 2 * 45 + 15) * MILLISECONDS_IN_MINUTES;
+            endMillis = getEndTimeInMillis(startMillis);
 
             String matchTitle = (matchToInsert.isHome() ? "Heim " : "Auswärts ") + matchToInsert.getOpponent();
 
@@ -96,6 +96,10 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
         }
     }
 
+    private long getEndTimeInMillis(long startTimeInMillis) {
+        return startTimeInMillis + ( 2 * 45 + 15) * MILLISECONDS_IN_MINUTES;
+    }
+
     private Uri getCalendarUri(Uri baseUri) {
         return baseUri.buildUpon()
                 .appendQueryParameter(Calendars.ACCOUNT_NAME, "dynamo_calendar")
@@ -116,7 +120,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
     public long getMatchEventID(Match targetMatch) {
 
         Calendar startDate = targetMatch.getDate();
-        startDate.set(Calendar.SECOND,0);
+        startDate.set(Calendar.SECOND, 0);
         startDate.set(Calendar.MILLISECOND,0);
 
         String selection = String.format("((%s = ?) AND (%s = ?) AND (%s = ?) AND (%s = ?) AND (%s = ?))",
@@ -144,6 +148,26 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
     public void moveMatch(Match matchToBeMoved, Calendar newDate) {
         createCalendarIfNecessary();
+
+        long eventID = getMatchEventID(matchToBeMoved);
+
+        if (eventID < 0) {
+            return;
+        }
+
+        Calendar startDate = newDate;
+        startDate.set(Calendar.SECOND,0);
+        startDate.set(Calendar.MILLISECOND,0);
+
+        long newStartMillis = startDate.getTimeInMillis();
+        long newEndMillis = getEndTimeInMillis(newStartMillis);
+
+        ContentValues values = new ContentValues();
+        values.put(Events.DTSTART, newStartMillis);
+        values.put(Events.DTEND, newEndMillis);
+
+        Uri uri = ContentUris.withAppendedId(getCalendarUri(Events.CONTENT_URI),eventID);
+        contentResolver.update(uri,values,null,null);
     }
 
     public MatchPlan getExistingMatches() {
