@@ -166,7 +166,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
         values.put(Events.DTSTART, newStartMillis);
         values.put(Events.DTEND, newEndMillis);
 
-        Uri uri = ContentUris.withAppendedId(getCalendarUri(Events.CONTENT_URI),eventID);
+        Uri uri = ContentUris.withAppendedId(getCalendarUri(Events.CONTENT_URI), eventID);
         contentResolver.update(uri,values,null,null);
     }
 
@@ -242,5 +242,12 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
 
         Uri uri = contentResolver.insert(srcUri, values);
         this.calendarID = Long.parseLong(uri.getLastPathSegment());
+    }
+
+    public void deleteCalendar() {
+        if (isCalendarCreated()) {
+            Uri uri = getCalendarUri(Calendars.CONTENT_URI);
+            contentResolver.delete(ContentUris.withAppendedId(uri,calendarID),null,null);
+        }
     }
 }

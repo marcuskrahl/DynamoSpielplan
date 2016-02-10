@@ -64,4 +64,9 @@
     <string name="pref_sync_now_key">sync_now_key</string>
     <string name="sync_fail_string">Sync failed: %1$s</string>
     <string name="sync_success_string">Sync success: %1$s</string>
+    <string name="pref_delete_calendar_key">delete_calendar_key</string>
+    <string name="pref_delete_calendar_title">Kalender löschen</string>
+    <string name="pref_delete_calendar_summary">Löscht den Dynamo Kalender vom Telefon. Das ist insbesondere nötig, wenn die App deinstalliert werden soll</string>
+    <string name="delete_calendar_success">Kalender erfolgreich gelöscht</string>
+    <string name="delete_calendar_failure">Kalender löschen fehlgeschlagen: %1$s</string>
 </resources>

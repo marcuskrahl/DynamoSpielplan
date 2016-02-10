@@ -137,6 +137,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             });
 
+            Preference deleteCalendar = (Preference) findPreference(getString(R.string.pref_delete_calendar_key));
+            deleteCalendar.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    deleteCalendar();
+                    return true;
+                }
+            });
+
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
@@ -163,6 +172,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     Toast.makeText(getActivity(),getString(R.string.sync_success_string, toastMessage),Toast.LENGTH_LONG).show();
                 }
             };
+        }
+
+        private void deleteCalendar() {
+            try {
+                (new CalendarAdapterImplementation(getActivity())).deleteCalendar();
+                Toast.makeText(getActivity(),getString(R.string.delete_calendar_success), Toast.LENGTH_LONG).show();
+            } catch (Exception ex) {
+                Toast.makeText(getActivity(),getString(R.string.delete_calendar_failure,ex.getMessage()), Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override

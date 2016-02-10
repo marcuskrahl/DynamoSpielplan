@@ -6,4 +6,10 @@
         android:summary="@string/pref_sync_now_summary"
         />
 
+    <Preference
+        android:key="@string/pref_delete_calendar_key"
+        android:title="@string/pref_delete_calendar_title"
+        android:summary="@string/pref_delete_calendar_summary"
+        />
+
 </PreferenceScreen>
