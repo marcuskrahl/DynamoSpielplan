@@ -186,7 +186,7 @@ public class CalendarAdapterImplementation implements CalendarAdapter {
                 date.setTimeInMillis(cur.getLong(MATCH_QUERY_DATE_INDEX));
                 MatchType matchType = MatchType.Test;
                 try {
-                    MatchType.valueOf(cur.getString(MATCH_QUERY_MATCH_TYPE_INDEX));
+                    matchType = MatchType.valueOf(cur.getString(MATCH_QUERY_MATCH_TYPE_INDEX));
                 } catch (Exception ex) {
 
                 }
