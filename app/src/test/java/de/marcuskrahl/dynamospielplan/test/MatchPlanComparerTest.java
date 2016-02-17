@@ -74,8 +74,8 @@ public class MatchPlanComparerTest {
     @Test
     public void WhenMatchIsRescheduled_MatchPlanComparer_MarksMatchAsToBeMoved() {
         Calendar newMatchDate = TestHelper.getLocalDate(2015,6,30,15,00);
-        Match movedMatchNewSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,6,30,15,00) ,true);
-        Match movedMatchOldSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,6,30,13,00) ,true);
+        Match movedMatchNewSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015, 6, 30, 15, 00) ,true);
+        Match movedMatchOldSlot = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015, 6, 30, 13, 00) ,true);
         MatchPlan oldMatchPlan = new MatchPlan(new Match[] {movedMatchOldSlot});
         MatchPlan newMatchPlan = new MatchPlan(new Match[] {movedMatchNewSlot});
 
@@ -83,6 +83,22 @@ public class MatchPlanComparerTest {
 
         assertEquals(movedMatchOldSlot, result.matchMovements.get(0).getMatch());
         assertEquals(newMatchDate, result.matchMovements.get(0).getNewDate());
+        assertEquals(0, result.matchesToAdd.size());
+        assertEquals(0, result.matchesToDelete.size());
+    }
+
+    @Test
+    public void WhenThereAreTwoAlmostEqualMatches_MatchPlanComparer_DoesNotMarkMatchesAsToBeMoved() {
+        Calendar newMatchDate = TestHelper.getLocalDate(2015,6,30,15,00);
+
+        Match match1 = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,6,30,15,00) ,true);
+        Match match2 = new Match(MatchType.Test, "Test match", TestHelper.getLocalDate(2015,7,30,13,00) ,true);
+        MatchPlan oldMatchPlan = new MatchPlan(new Match[] {match1, match2});
+        MatchPlan newMatchPlan = new MatchPlan(new Match[] {match1, match2});
+
+        MatchPlanComparisonResult result = comparer.compare(oldMatchPlan,newMatchPlan);
+
+        assertEquals(0, result.matchMovements.size());
         assertEquals(0, result.matchesToAdd.size());
         assertEquals(0, result.matchesToDelete.size());
     }

@@ -48,11 +48,20 @@ public class MatchPlanComparer {
     private void addMatchMovements() {
         for (Match newMatch:newMatchPlan.matches) {
             for (Match oldMatch: oldMatchPlan.matches) {
-                if (!(newMatch.equals(oldMatch)) && newMatch.equalsIgnoreDate(oldMatch)) {
+                if (!(newMatch.equals(oldMatch)) && newMatch.equalsIgnoreDate(oldMatch) && !planContainsMatchIncludingDate(oldMatchPlan,newMatch)) {
                     result.matchMovements.add(new MatchMovement(oldMatch,newMatch.getDate()));
                 }
             }
         }
+    }
+
+    private boolean planContainsMatchIncludingDate(MatchPlan plan, Match matchToSearch) {
+        for(Match match: plan.matches) {
+            if (matchToSearch.equals(match)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
